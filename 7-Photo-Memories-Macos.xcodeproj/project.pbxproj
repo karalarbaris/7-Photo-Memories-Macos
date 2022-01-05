@@ -11,6 +11,8 @@
 		15617262278443EC00ABC519 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15617261278443EC00ABC519 /* ViewController.swift */; };
 		15617264278443EF00ABC519 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15617263278443EF00ABC519 /* Assets.xcassets */; };
 		15617267278443EF00ABC519 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 15617265278443EF00ABC519 /* Main.storyboard */; };
+		15617270278572C900ABC519 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1561726E278572C900ABC519 /* Photo.swift */; };
+		15617271278572C900ABC519 /* Photo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1561726F278572C900ABC519 /* Photo.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +22,8 @@
 		15617263278443EF00ABC519 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		15617266278443EF00ABC519 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		15617268278443EF00ABC519 /* __Photo_Memories_Macos.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = __Photo_Memories_Macos.entitlements; sourceTree = "<group>"; };
+		1561726E278572C900ABC519 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		1561726F278572C900ABC519 /* Photo.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Photo.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +58,8 @@
 			children = (
 				1561725F278443EC00ABC519 /* AppDelegate.swift */,
 				15617261278443EC00ABC519 /* ViewController.swift */,
+				1561726E278572C900ABC519 /* Photo.swift */,
+				1561726F278572C900ABC519 /* Photo.xib */,
 				15617263278443EF00ABC519 /* Assets.xcassets */,
 				15617265278443EF00ABC519 /* Main.storyboard */,
 				15617268278443EF00ABC519 /* __Photo_Memories_Macos.entitlements */,
@@ -119,6 +125,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15617271278572C900ABC519 /* Photo.xib in Resources */,
 				15617264278443EF00ABC519 /* Assets.xcassets in Resources */,
 				15617267278443EF00ABC519 /* Main.storyboard in Resources */,
 			);
@@ -131,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15617270278572C900ABC519 /* Photo.swift in Sources */,
 				15617262278443EC00ABC519 /* ViewController.swift in Sources */,
 				15617260278443EC00ABC519 /* AppDelegate.swift in Sources */,
 			);
