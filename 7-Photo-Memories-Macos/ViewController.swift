@@ -57,7 +57,38 @@ class ViewController: NSViewController {
     
     func performInternalDrag(with items: [IndexPath], to indexPath: IndexPath) {
         
-    }
+        // keep track of where we're moving to
+        var targetIndex = indexPath.item
+        for fromIndexPath in items {
+            // figure out where we're moving from
+            let fromItemIndex = fromIndexPath.item
+            // this is a move towards the front of the array
+            if (fromItemIndex > targetIndex) {
+                // call our array extension to perform the move
+                photos.moveItem(from: fromItemIndex, to: targetIndex)
+                // move it in the collection view too
+                collectionView.moveItem(at: IndexPath(item: fromItemIndex, section: 0), to: IndexPath(item: targetIndex, section: 0))
+                // update our destination position
+                targetIndex += 1
+            }
+        }
+        // reset the target position – we want to move to the slot before the item the user chose
+        targetIndex = indexPath.item - 1
+        // loop backwards over our items
+        for fromIndexPath in items.reversed() {
+            let fromItemIndex = fromIndexPath.item
+            // this is a move towards the back of the array
+            if (fromItemIndex < targetIndex) {
+                // call our array extension to perform the move
+                photos.moveItem(from: fromItemIndex, to: targetIndex)
+                // move it in the collection view too
+                let targetIndexPath = IndexPath(item: targetIndex, section: 0)
+                collectionView.moveItem(at: IndexPath(item: fromItemIndex, section: 0), to: targetIndexPath)
+                // update our destination position
+                targetIndex -= 1
+            }
+        } }
+    
     
     func performExternalDrag(with items: [NSPasteboardItem], at indexPath: IndexPath) {
         
@@ -65,7 +96,9 @@ class ViewController: NSViewController {
         for item in items {
             
             // 2. pull out the string containing the URL for this item
-            guard let stringURL = item.string(forType: NSPasteboard.PasteboardType(kUTTypeURL as String)) else { return }
+            guard let stringURL = item.string(forType: NSPasteboard.PasteboardType.fileURL)  else { continue }
+            
+            //                    item.string(forType: NSPasteboard.PasteboardType(kUTTypeURL as String)) else { continue }
             
             // 3. attempt to convert the string into a real URL
             guard let sourceURL = URL(string: stringURL) else { continue }
@@ -132,7 +165,21 @@ extension ViewController: NSCollectionViewDataSource, NSCollectionViewDelegate {
         
         return true
     }
-
+    
+    func collectionView(_ collectionView: NSCollectionView, pasteboardWriterForItemAt indexPath: IndexPath) -> NSPasteboardWriting? {
+        return photos[indexPath.item] as NSPasteboardWriting?
+    }
+    
     
 }
 
+extension Array {
+    mutating func moveItem(from: Int, to: Int) {
+        let item = self[from]
+        self.remove(at: from)
+        if to <= from {
+            self.insert(item, at: to)
+        } else {
+            self.insert(item, at: to - 1)
+        } }
+}
