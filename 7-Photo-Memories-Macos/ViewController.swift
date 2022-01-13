@@ -11,6 +11,8 @@ class ViewController: NSViewController {
     
     @IBOutlet var collectionView: NSCollectionView!
     
+    var itemsBeingDragged: Set<IndexPath>?
+    
     lazy var photosDirectory: URL = {
         let fm = FileManager.default
         let paths = fm.urls(for: .documentDirectory, in: .userDomainMask)
@@ -20,8 +22,8 @@ class ViewController: NSViewController {
         if !fm.fileExists(atPath: saveDirectory.path) {
             try? fm.createDirectory(at: saveDirectory, withIntermediateDirectories: true)
         }
-            
-            return saveDirectory
+        
+        return saveDirectory
     }()
     
     var photos = [URL]()
@@ -29,6 +31,7 @@ class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        collectionView.registerForDraggedTypes([NSPasteboard.PasteboardType(kUTTypeURL as String)])
         
         do {
             let fm = FileManager.default
@@ -52,6 +55,38 @@ class ViewController: NSViewController {
         }
     }
     
+    func performInternalDrag(with items: [IndexPath], to indexPath: IndexPath) {
+        
+    }
+    
+    func performExternalDrag(with items: [NSPasteboardItem], at indexPath: IndexPath) {
+        
+        // 1. loop over every item on the drag and drop pasteboard
+        for item in items {
+            
+            // 2. pull out the string containing the URL for this item
+            guard let stringURL = item.string(forType: NSPasteboard.PasteboardType(kUTTypeURL as String)) else { return }
+            
+            // 3. attempt to convert the string into a real URL
+            guard let sourceURL = URL(string: stringURL) else { continue }
+            
+            // 4. create a destination URL by combining `photosDirectory` with the last path component
+            let destinationURL = photosDirectory.appendingPathComponent(sourceURL.lastPathComponent)
+            
+            // 5. attempt to copy the file to our app's folder
+            do {
+                try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+            } catch {
+                print("Could not copy \(sourceURL)")
+            }
+            
+            // 6. Update the array and collection view
+            photos.insert(destinationURL, at: indexPath.item)
+            collectionView.insertItems(at: [indexPath])
+            
+            
+        }
+    }
     
 }
 
@@ -71,5 +106,33 @@ extension ViewController: NSCollectionViewDataSource, NSCollectionViewDelegate {
         return pictureItem
     }
     
+    func collectionView(_ collectionView: NSCollectionView, validateDrop draggingInfo: NSDraggingInfo, proposedIndexPath proposedDropIndexPath: AutoreleasingUnsafeMutablePointer<NSIndexPath>, dropOperation proposedDropOperation: UnsafeMutablePointer<NSCollectionView.DropOperation>) -> NSDragOperation {
+        return .move
+    }
+    
+    func collectionView(_ collectionView: NSCollectionView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint, forItemsAt indexPaths: Set<IndexPath>) {
+        itemsBeingDragged = indexPaths
+    }
+    
+    func collectionView(_ collectionView: NSCollectionView, draggingSession session: NSDraggingSession, endedAt screenPoint: NSPoint, dragOperation operation: NSDragOperation) {
+        itemsBeingDragged = nil
+    }
+    
+    func collectionView(_ collectionView: NSCollectionView, acceptDrop draggingInfo: NSDraggingInfo, indexPath: IndexPath, dropOperation: NSCollectionView.DropOperation) -> Bool {
+        
+        if let moveItems = itemsBeingDragged?.sorted() {
+            // internal drag
+            performInternalDrag(with: moveItems, to: indexPath)
+        } else {
+            //external drag
+            let pasteboard = draggingInfo.draggingPasteboard
+            guard let items = pasteboard.pasteboardItems else { return true }
+            performExternalDrag(with: items, at: indexPath)
+        }
+        
+        return true
+    }
+
     
 }
+
